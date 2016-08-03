@@ -209,7 +209,8 @@
     __weak typeof (self) weakSelf = self;
     __block NSURLSessionDataTask *apiTask = [self.httpManager dataTaskWithRequest:request
                                                         completionHandler:^(NSURLResponse * _Nonnull response, id  _Nullable responseObject, NSError * _Nullable error) {
-                                                            //remove task
+                                                            //apiTask must use __block,not capture!!
+                                                            //因为捕获的时候，apiTask还未初始化完全，值是nil
                                                             [weakSelf.taskTable removeObjectForKey:@(apiTask.taskIdentifier)];
                                                             
                                                             if (error) {
