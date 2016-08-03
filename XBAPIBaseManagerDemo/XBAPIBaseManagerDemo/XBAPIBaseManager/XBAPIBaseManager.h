@@ -28,6 +28,9 @@ typedef NS_ENUM(NSUInteger, XBAPIManagerErrorType) {
     /** 解析返回的数据出错 */
     XBAPIManagerErrorTypeParseError,
     
+    /** 请求取消 */
+    XBAPIManagerErrorTypeCancle,
+    
     /** 请求超时 */
     XBAPIManagerErrorTypeTimeout,
     
@@ -55,6 +58,8 @@ typedef NS_ENUM(NSUInteger, XBAPIManagerLoadType) {
     /** 从本地获取 */
     XBAPIManagerLoadTypeLocal,
 };
+
+typedef void (^XBAPIManagerCallBackBlock)(XBAPIBaseManager * _Nonnull apiManager);
 
 #pragma mark - XBAPIManagerDataSource
 @protocol XBAPIManagerDataSource <NSObject>
@@ -86,6 +91,14 @@ typedef NS_ENUM(NSUInteger, XBAPIManagerLoadType) {
  *  @param manager
  */
 - (void)onManagerCallApiFailed:(nonnull XBAPIBaseManager *)manager;
+
+
+@optional
+
+/**
+ *  取消网络请求的回调
+ */
+- (void)onManagerCallCancled;
 
 @end
 
@@ -121,7 +134,9 @@ typedef NS_ENUM(NSUInteger, XBAPIManagerLoadType) {
 @property (nonnull ,nonatomic, readonly, copy) NSString *requestUrlString;
 @property (nonatomic, assign) NSTimeInterval timeout; //每个接口可以单独设置超时时间
 
-//method
+//api method
+
+- (nonnull instancetype)initWithDelegate:(nullable id<XBAPIManagerCallBackDelegate>)delegate;
 
 /** 网络请求接口数据 */
 - (void)loadData;
@@ -130,5 +145,11 @@ typedef NS_ENUM(NSUInteger, XBAPIManagerLoadType) {
 - (void)loadDataFromLocal; 
 
 - (void)loadDataWithType:(XBAPIManagerLoadType)loadType;
+- (void)loadDataWithType:(XBAPIManagerLoadType)loadType
+        andCallBackBlock:(nullable XBAPIManagerCallBackBlock)block;
+
+- (void)cancleRequestWithRequestId:(NSInteger)requestId;
+- (void)cancleCurrentRequest;
+- (void)cancleAllRequest;
 
 @end

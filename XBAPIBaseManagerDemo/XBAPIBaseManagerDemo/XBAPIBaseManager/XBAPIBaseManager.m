@@ -25,12 +25,19 @@
 @property (nonatomic, strong) NSMutableDictionary *taskTable;
 @property (nonatomic, assign) NSInteger requestId;
 
+@property (nonatomic, strong) XBAPIManagerCallBackBlock callbackBlcok;
+
 @end
 
 @implementation XBAPIBaseManager
 
 
 - (instancetype)init {
+    return [self initWithDelegate:nil];
+}
+
+- (instancetype)initWithDelegate:(id<XBAPIManagerCallBackDelegate>)delegate {
+
     self = [super init];
     if (self) {
         if (![self conformsToProtocol:@protocol(XBAPIManagerProtocol)]) {
@@ -41,6 +48,7 @@
             @throw exception;
         }
         self.apiManager = (id<XBAPIManagerProtocol>)self; //子类必须实现XBAPIManagerProtocol协议的方法
+        self.delegate = delegate;
         
         self.requestMethod = XBAPIRequestMethodGET;
         self.loadType = XBAPIManagerLoadTypeNetWork;
@@ -139,6 +147,12 @@
 }
 
 - (void)loadDataWithType:(XBAPIManagerLoadType)loadType {
+    [self loadDataWithType:loadType andCallBackBlock:nil];
+}
+
+- (void)loadDataWithType:(XBAPIManagerLoadType)loadType
+        andCallBackBlock:(XBAPIManagerCallBackBlock)block {
+    self.callbackBlcok = block;
     self.loadType = loadType;
     switch (self.loadType) {
         case XBAPIManagerLoadTypeNetWork:
@@ -147,6 +161,7 @@
             
         case XBAPIManagerLoadTypeLocal:
             [self loadDataFromLocal];
+            break;
     }
 }
 
@@ -201,7 +216,7 @@
                                                                 [weakSelf handleError:error];
                                                             } else {
                                                                 if (weakSelf.shouldCache) {
-                                                                    [weakSelf saveDataToLocal:responseObject withRequestUrl:response.URL.relativeString];
+                                                                    [weakSelf saveDataToLocal:responseObject];
                                                                 }
                                                                 [weakSelf handleResponseData:responseObject];
                                                             }
@@ -240,12 +255,18 @@
 }
 
 - (void)handleError:(NSError *)error {
+    //取消导致的错误单独处理
+    if (error.code ==  NSURLErrorCancelled) {
+        self.errorType = XBAPIManagerErrorTypeCancle;
+        return [self callOnManagerCallCancled];
+    }
+    
     if (error.code >= 500 && error.code < 600) {
         self.errorType = XBAPIManagerErrorTypeServerError;
-        self.errorMsg = error.description ?: @"服务器异常";
+        self.errorMsg = error.description;
     } else {
         self.errorType = XBAPIManagerErrorTypeHttpError;
-        self.errorMsg = error.description ?: @"数据出错";
+        self.errorMsg = error.description;
     }
     
     [self callOnManagerCallApiFailed];
@@ -253,8 +274,9 @@
 
 #pragma mark - local cache
 
-- (void)saveDataToLocal:(id)responseObject withRequestUrl:(nonnull NSString *)urlString {
-    [[NSUserDefaults standardUserDefaults] setObject:responseObject forKey:urlString];
+- (void)saveDataToLocal:(id)responseObject {
+    //这里可能有个问题，那就是保存的时候url地址发生了改变，比如有其他请求发出，不过一般只是参数发生变化，本身的urlString不变
+    [[NSUserDefaults standardUserDefaults] setObject:responseObject forKey:self.requestUrlString];
     [[NSUserDefaults standardUserDefaults] synchronize];
 }
 
@@ -285,7 +307,6 @@
 
 - (void)callParseDataSuccess {
     self.errorType = XBAPIManagerErrorTypeSuccess;
-    self.errorMsg = @"成功";
     [self callOnManagerCallApiSuccess];
 }
 
@@ -293,11 +314,29 @@
     if ([self.delegate respondsToSelector:@selector(onManagerCallApiSuccess:)]) {
         [self.delegate onManagerCallApiSuccess:self];
     }
+    
+    if (self.callbackBlcok) {
+        self.callbackBlcok(self);
+    }
 }
 
 - (void)callOnManagerCallApiFailed {
     if ([self.delegate respondsToSelector:@selector(onManagerCallApiFailed:)]) {
         [self.delegate onManagerCallApiFailed:self];
+    }
+    
+    if (self.callbackBlcok) {
+        self.callbackBlcok(self);
+    }
+}
+
+- (void)callOnManagerCallCancled {
+    if ([self.delegate respondsToSelector:@selector(callOnManagerCallCancled)]) {
+        [self.delegate onManagerCallCancled];
+    }
+    
+    if (self.callbackBlcok) {
+        self.callbackBlcok(self);
     }
 }
 

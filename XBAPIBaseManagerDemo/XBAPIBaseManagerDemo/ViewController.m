@@ -21,10 +21,15 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view, typically from a nib.
     
-    self.api = [[GetAppInfo alloc] init];
-    self.api.delegate = self;
+    self.api = [[GetAppInfo alloc] initWithDelegate:self];
     self.api.timeout = 6;
     [self.api loadData];
+    
+//    self.api = [[GetAppInfo alloc] init];
+//    self.api.timeout = 6;
+//    [self.api loadDataWithType:XBAPIManagerLoadTypeLocal andCallBackBlock:^(XBAPIBaseManager * _Nonnull apiManager) {
+//        NSLog(@"CallBackBlock:%@", apiManager.rawResponseString);
+//    }];
 }
 
 - (void)dealloc {
