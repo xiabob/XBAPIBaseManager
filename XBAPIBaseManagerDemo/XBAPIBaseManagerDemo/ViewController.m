@@ -7,8 +7,11 @@
 //
 
 #import "ViewController.h"
+#import "GetAppInfo.h"
 
-@interface ViewController ()
+@interface ViewController ()<XBAPIManagerCallBackDelegate>
+
+@property (nonatomic, strong) GetAppInfo *api;
 
 @end
 
@@ -17,6 +20,25 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view, typically from a nib.
+    
+    self.api = [[GetAppInfo alloc] init];
+    self.api.delegate = self;
+    self.api.timeout = 6;
+    [self.api loadData];
+}
+
+- (void)dealloc {
+    NSLog(@"dealloc");
+}
+
+#pragma mark - XBAPIManagerCallBackDelegate
+
+- (void)onManagerCallApiSuccess:(XBAPIBaseManager *)manager {
+    NSLog(@"onManagerCallApiSuccess");
+}
+
+- (void)onManagerCallApiFailed:(XBAPIBaseManager *)manager {
+    NSLog(@"onManagerCallApiFailed");
 }
 
 - (void)didReceiveMemoryWarning {

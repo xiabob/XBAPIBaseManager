@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		741385861D51DADB00229EC2 /* GetAppInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 741385851D51DADB00229EC2 /* GetAppInfo.m */; };
 		7428E4A51D4F2DEF001A6BCF /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 7428E4A41D4F2DEF001A6BCF /* main.m */; };
 		7428E4A81D4F2DEF001A6BCF /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 7428E4A71D4F2DEF001A6BCF /* AppDelegate.m */; };
 		7428E4AB1D4F2DEF001A6BCF /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7428E4AA1D4F2DEF001A6BCF /* ViewController.m */; };
@@ -39,6 +40,8 @@
 /* Begin PBXFileReference section */
 		2A162F00E559D935696AE8DA /* Pods-XBAPIBaseManagerDemo.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-XBAPIBaseManagerDemo.debug.xcconfig"; path = "Pods/Target Support Files/Pods-XBAPIBaseManagerDemo/Pods-XBAPIBaseManagerDemo.debug.xcconfig"; sourceTree = "<group>"; };
 		50BA89ECDAF796145F61F1FF /* Pods-XBAPIBaseManagerDemo.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-XBAPIBaseManagerDemo.release.xcconfig"; path = "Pods/Target Support Files/Pods-XBAPIBaseManagerDemo/Pods-XBAPIBaseManagerDemo.release.xcconfig"; sourceTree = "<group>"; };
+		741385841D51DADB00229EC2 /* GetAppInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GetAppInfo.h; sourceTree = "<group>"; };
+		741385851D51DADB00229EC2 /* GetAppInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GetAppInfo.m; sourceTree = "<group>"; };
 		7428E4A01D4F2DEF001A6BCF /* XBAPIBaseManagerDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = XBAPIBaseManagerDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7428E4A41D4F2DEF001A6BCF /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		7428E4A61D4F2DEF001A6BCF /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -124,6 +127,8 @@
 				7428E4A71D4F2DEF001A6BCF /* AppDelegate.m */,
 				7428E4A91D4F2DEF001A6BCF /* ViewController.h */,
 				7428E4AA1D4F2DEF001A6BCF /* ViewController.m */,
+				741385841D51DADB00229EC2 /* GetAppInfo.h */,
+				741385851D51DADB00229EC2 /* GetAppInfo.m */,
 				7428E4AC1D4F2DEF001A6BCF /* Main.storyboard */,
 				7428E4AF1D4F2DEF001A6BCF /* Assets.xcassets */,
 				7428E4B11D4F2DEF001A6BCF /* LaunchScreen.storyboard */,
@@ -359,6 +364,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				7428E4AB1D4F2DEF001A6BCF /* ViewController.m in Sources */,
+				741385861D51DADB00229EC2 /* GetAppInfo.m in Sources */,
 				7428E4A81D4F2DEF001A6BCF /* AppDelegate.m in Sources */,
 				7428E4A51D4F2DEF001A6BCF /* main.m in Sources */,
 				7428E4D91D4F2E4F001A6BCF /* XBAPIBaseManager.m in Sources */,
