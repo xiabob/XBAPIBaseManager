@@ -32,6 +32,11 @@
 //    }];
 }
 
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    [self.api loadData];
+}
+
 - (void)dealloc {
     NSLog(@"dealloc");
 }
@@ -44,6 +49,10 @@
 
 - (void)onManagerCallApiFailed:(XBAPIBaseManager *)manager {
     NSLog(@"onManagerCallApiFailed");
+}
+
+- (void)onManagerCallCancled:(XBAPIBaseManager *)manager {
+    NSLog(@"onManagerCallCancled");
 }
 
 - (void)didReceiveMemoryWarning {

@@ -14,6 +14,7 @@
 @interface XBAPIBaseManager()
 
 @property (nonnull, nonatomic, strong) AFHTTPSessionManager *httpManager;
+@property (nullable, nonatomic, weak) NSObject<XBAPIManagerProtocol> *apiManager;
 
 @property (nonatomic, assign) XBAPIManagerLoadType loadType;
 @property (nonatomic, assign) XBAPIRequestMethod requestMethod;
@@ -61,6 +62,9 @@
 }
 
 - (void)dealloc {
+    //in sessionWithConfiguration:delegate:delegateQueue:,If you do specify a delegate, the delegate will be retained until after the delegate has been sent the URLSession:didBecomeInvalidWithError: message.
+    //see:AFURLSessionManager init method
+    [self.httpManager.session finishTasksAndInvalidate];
     [self cancleAllRequest];
 }
 
@@ -239,12 +243,16 @@
                                                                  options:NSJSONReadingAllowFragments
                                                                    error:nil];
         if (!jsonDict) {return [self callParseDataFailed];}
-        
+
         if ([self.apiManager respondsToSelector:@selector(parseData:)]) {
             dispatch_async(self.parseQueue, ^{
                 [self.apiManager parseData:jsonDict];
                 dispatch_async(dispatch_get_main_queue(), ^{
-                    [self callParseDataSuccess];
+                    if (self.errorType == XBAPIManagerErrorTypeSuccess) {
+                        [self callOnManagerCallApiSuccess];
+                    } else {
+                        [self callOnManagerCallApiFailed];
+                    }
                 });
             });
         }
@@ -332,8 +340,8 @@
 }
 
 - (void)callOnManagerCallCancled {
-    if ([self.delegate respondsToSelector:@selector(callOnManagerCallCancled)]) {
-        [self.delegate onManagerCallCancled];
+    if ([self.delegate respondsToSelector:@selector(onManagerCallCancled:)]) {
+        [self.delegate onManagerCallCancled:self];
     }
     
     if (self.callbackBlcok) {

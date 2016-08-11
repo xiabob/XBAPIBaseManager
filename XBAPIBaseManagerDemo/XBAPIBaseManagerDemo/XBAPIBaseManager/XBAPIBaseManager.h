@@ -98,7 +98,7 @@ typedef void (^XBAPIManagerCallBackBlock)(XBAPIBaseManager * _Nonnull apiManager
 /**
  *  取消网络请求的回调
  */
-- (void)onManagerCallCancled;
+- (void)onManagerCallCancled:(nonnull XBAPIBaseManager *)manager;
 
 @end
 
@@ -109,9 +109,9 @@ typedef void (^XBAPIManagerCallBackBlock)(XBAPIBaseManager * _Nonnull apiManager
 - (XBAPIRequestMethod)requestMethod;
 
 @optional
-- (nullable NSDictionary *)parameters; //配置接口需要的参数
-- (BOOL)shouldCache; //需要本地缓存数据吗？
-- (void)parseData:(nonnull id)responseData; //注意该方法本身处在子线程环境中:具体的解析工作要放在子类中进行，并且这个解析工作可以延后至onManagerCallApiSuccess里面进行
+- (nullable NSDictionary *)parameters; ///< 配置接口需要的参数
+- (BOOL)shouldCache; ///< 需要本地缓存数据吗？
+- (void)parseData:(nonnull id)responseData; ///< 注意该方法本身处在子线程环境中:具体的解析工作要放在子类中进行，并且这个解析工作可以延后至onManagerCallApiSuccess里面进行
 
 
 @end
@@ -122,17 +122,16 @@ typedef void (^XBAPIManagerCallBackBlock)(XBAPIBaseManager * _Nonnull apiManager
 
 @property (nullable, nonatomic, weak) id<XBAPIManagerCallBackDelegate> delegate;
 @property (nullable, nonatomic, weak) id<XBAPIManagerDataSource> dataSource;
-@property (nullable, nonatomic, weak) NSObject<XBAPIManagerProtocol> *apiManager;
 
 //返回的数据
-@property (nonatomic, assign) XBAPIManagerErrorType errorType; //错误类型
-@property (nullable, nonatomic, copy) NSString *errorMsg; //具体的错误信息
-@property (nullable, nonatomic, strong) NSString *rawResponseString; //返回的原始字符串数据
-@property (nullable, nonatomic, strong) id contentData; //解析后的数据，可以是nil，一般是子类自己添加新的属性
+@property (nonatomic, assign) XBAPIManagerErrorType errorType; ///< 错误类型
+@property (nullable, nonatomic, copy) NSString *errorMsg; ///< 具体的错误信息
+@property (nullable, nonatomic, strong) NSString *rawResponseString; ///< 返回的原始字符串数据
+@property (nullable, nonatomic, strong) id contentData; ///< 解析后的数据，可以是nil，一般是子类自己添加新的属性
 
 //其他属性
 @property (nonnull ,nonatomic, readonly, copy) NSString *requestUrlString;
-@property (nonatomic, assign) NSTimeInterval timeout; //每个接口可以单独设置超时时间
+@property (nonatomic, assign) NSTimeInterval timeout; ///< 每个接口可以单独设置超时时间
 
 //api method
 
