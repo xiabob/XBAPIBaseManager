@@ -151,4 +151,6 @@ typedef void (^XBAPIManagerCallBackBlock)(XBAPIBaseManager * _Nonnull apiManager
 - (void)cancleCurrentRequest;
 - (void)cancleAllRequest;
 
+- (void)removeAllLocalDatas;
+
 @end

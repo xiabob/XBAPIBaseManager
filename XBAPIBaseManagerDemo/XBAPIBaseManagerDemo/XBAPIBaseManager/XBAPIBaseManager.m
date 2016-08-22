@@ -10,6 +10,8 @@
 #import "AFNetworking.h"
 
 
+#define kXBLocalUserDefaultsName @"com.xiabob.XBAPIBaseManager.localUserDefaults"
+#define kXBDefaultMaxLocalDatasCount 500
 
 @interface XBAPIBaseManager()
 
@@ -25,6 +27,7 @@
 @property (nonatomic) dispatch_queue_t parseQueue;
 @property (nonatomic, strong) NSMutableDictionary *taskTable;
 @property (nonatomic, assign) NSInteger requestId;
+@property (nonatomic, strong) NSUserDefaults *localUserDefaults;
 
 @property (nonatomic, strong) XBAPIManagerCallBackBlock callbackBlcok;
 
@@ -104,6 +107,17 @@
     }
     
     return _parseQueue;
+}
+
+- (NSUserDefaults *)localUserDefaults {
+    if (!_localUserDefaults) {
+        _localUserDefaults = [[NSUserDefaults alloc] initWithSuiteName:kXBLocalUserDefaultsName];
+        if ([[_localUserDefaults dictionaryRepresentation] allKeys].count > kXBDefaultMaxLocalDatasCount) {
+            [_localUserDefaults removePersistentDomainForName:kXBLocalUserDefaultsName];
+        }
+    }
+    
+    return _localUserDefaults;
 }
 
 #pragma mark - api method cancle
@@ -285,12 +299,16 @@
 
 - (void)saveDataToLocal:(id)responseObject {
     //这里可能有个问题，那就是保存的时候url地址发生了改变，比如有其他请求发出，不过一般只是参数发生变化，本身的urlString不变
-    [[NSUserDefaults standardUserDefaults] setObject:responseObject forKey:self.requestUrlString];
-    [[NSUserDefaults standardUserDefaults] synchronize];
+    [self.localUserDefaults setObject:responseObject forKey:self.requestUrlString];
+    [self.localUserDefaults synchronize];
 }
 
 - (id)getDataFromLocalWithRequestUrl:(nonnull NSString *)urlString {
-    return [[NSUserDefaults standardUserDefaults] objectForKey:urlString];
+    return [self.localUserDefaults objectForKey:urlString];
+}
+
+- (void)removeAllLocalDatas {
+    [self.localUserDefaults removePersistentDomainForName:kXBLocalUserDefaultsName];
 }
 
 #pragma mark - util methods
