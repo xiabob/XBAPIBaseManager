@@ -48,7 +48,7 @@
 }
 
 - (void)onManagerCallApiFailed:(XBAPIBaseManager *)manager {
-    NSLog(@"onManagerCallApiFailed");
+    NSLog(@"onManagerCallApiFailed:%@", manager.errorMsg);
 }
 
 - (void)onManagerCallCancled:(XBAPIBaseManager *)manager {

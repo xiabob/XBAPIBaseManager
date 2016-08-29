@@ -23,6 +23,7 @@
 @property (nonatomic, strong) NSDictionary *parameters;
 @property (nonatomic, copy) NSString *requestUrlString;
 @property (nonatomic, assign) BOOL shouldCache;
+@property (nonatomic, assign) BOOL isReachable;
 
 @property (nonatomic) dispatch_queue_t parseQueue;
 @property (nonatomic, strong) NSMutableDictionary *taskTable;
@@ -69,6 +70,8 @@
     //see:AFURLSessionManager init method
     [self.httpManager.session finishTasksAndInvalidate];
     [self cancleAllRequest];
+    
+    [[AFNetworkReachabilityManager sharedManager] stopMonitoring];
 }
 
 #pragma mark - getter and setter
@@ -118,6 +121,14 @@
     }
     
     return _localUserDefaults;
+}
+
+- (BOOL)isReachable {
+    if ([AFNetworkReachabilityManager sharedManager].networkReachabilityStatus == AFNetworkReachabilityStatusUnknown) {
+        return YES;
+    } else {
+        return [[AFNetworkReachabilityManager sharedManager] isReachable];
+    }
 }
 
 #pragma mark - api method cancle
@@ -218,7 +229,7 @@
     }
     
     //检查网络连通性
-    if ([AFNetworkReachabilityManager sharedManager].networkReachabilityStatus == AFNetworkReachabilityStatusNotReachable) {
+    if (!self.isReachable) {
         self.errorType = XBAPIManagerErrorTypeNoNetWork;
         self.errorMsg = @"网络未连接";
         return [self callOnManagerCallApiFailed];
