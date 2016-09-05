@@ -13,6 +13,7 @@
 #define kXBLocalUserDefaultsName @"com.xiabob.XBAPIBaseManager.localUserDefaults"
 #define kXBDefaultMaxLocalDatasCount 500
 
+
 @interface XBAPIBaseManager()
 
 @property (nonnull, nonatomic, strong) AFHTTPSessionManager *httpManager;
@@ -20,9 +21,13 @@
 
 @property (nonatomic, assign) XBAPIManagerLoadType loadType;
 @property (nonatomic, assign) XBAPIRequestMethod requestMethod;
-@property (nonatomic, strong) NSDictionary *parameters;
 @property (nonatomic, copy) NSString *requestUrlString;
+@property (nonatomic, copy) NSString *urlProtocol;
+@property (nonatomic, copy) NSString *urlHostName;
+@property (nonatomic, copy) NSString *urlPath;
+@property (nonatomic, strong) NSDictionary *parameters;
 @property (nonatomic, assign) BOOL shouldCache;
+@property (nonatomic, assign) BOOL isJsonData;
 @property (nonatomic, assign) BOOL isReachable;
 
 @property (nonatomic) dispatch_queue_t parseQueue;
@@ -55,14 +60,52 @@
         self.apiManager = (id<XBAPIManagerProtocol>)self; //子类必须实现XBAPIManagerProtocol协议的方法
         self.delegate = delegate;
         
+        self.urlProtocol = @"https";
+        self.urlHostName = @"";
         self.requestMethod = XBAPIRequestMethodGET;
-        self.loadType = XBAPIManagerLoadTypeNetWork;
+        self.loadType = XBAPIManagerLoadTypeNetwork;
         self.errorType = XBAPIManagerErrorTypeSuccess;
         self.timeout = 15;//默认超时时间15s
         self.shouldCache = NO;
+        self.isJsonData = YES;
+        self.isReachable = YES;
+        
+        [self setProtocolProperties];
     }
     
     return self;
+}
+
+- (void)setProtocolProperties {
+    if ([self.apiManager respondsToSelector:@selector(urlProtocol)]) {
+        self.urlProtocol = self.apiManager.urlProtocol;
+    }
+    
+    if ([self.apiManager respondsToSelector:@selector(urlHostName)]) {
+        self.urlHostName = self.apiManager.urlHostName;
+    }
+    
+    if ([self.apiManager respondsToSelector:@selector(requestUrlString)]) {
+        self.urlPath = self.apiManager.urlPath;
+    }
+    //三者构成基本URL数据
+    self.requestUrlString = [NSString stringWithFormat:@"%@://%@/%@", self.urlProtocol, self.urlHostName, self.urlPath];
+    
+    if ([self.apiManager respondsToSelector:@selector(requestMethod)]) {
+        self.requestMethod = [self.apiManager requestMethod];
+    }
+    
+    if ([self.apiManager respondsToSelector:@selector(parameters)]) {
+        self.parameters = [self.apiManager parameters];
+    }
+    
+    if ([self.apiManager respondsToSelector:@selector(shouldCache)]) {
+        self.shouldCache = self.apiManager.shouldCache;
+    }
+    
+    if ([self.apiManager respondsToSelector:@selector(isResponseJsonData)]) {
+        self.isJsonData = self.apiManager.isResponseJsonData;
+    }
 }
 
 - (void)dealloc {
@@ -155,22 +198,19 @@
 #pragma mark - api method load data
 
 - (void)loadData {
-    if ([self.apiManager respondsToSelector:@selector(requestMethod)]) {
-        self.requestMethod = [self.apiManager requestMethod];
-    }
     [self excuteHttpRequest];
 }
 
 //父类有一个默认的实现，根据自己的需要可以在子类覆盖此方法，实现自己的实现
 - (void)loadDataFromLocal {
-    self.requestUrlString = self.apiManager.requestUrlString;
-    id responseObject = [self getDataFromLocalWithRequestUrl:self.requestUrlString];
-    if (responseObject) {
-        [self handleResponseData:responseObject];
+    if (self.shouldCache) {
+        id responseObject = [self getDataFromLocalWithRequestUrl:self.requestUrlString];
+        if (responseObject) {
+            [self handleResponseData:responseObject];
+        } //本地没有缓存数据时，不能当做错误处理
     } else {
-        //可能是本地没有缓存
         self.errorType = XBAPIManagerErrorTypeLocalLoadError;
-        self.errorMsg = @"本地没有缓存的数据";
+        self.errorMsg = @"缓存本地功能未开启";
         [self callOnManagerCallApiFailed];
     }
 }
@@ -184,7 +224,7 @@
     self.callbackBlcok = block;
     self.loadType = loadType;
     switch (self.loadType) {
-        case XBAPIManagerLoadTypeNetWork:
+        case XBAPIManagerLoadTypeNetwork:
             [self loadData];
             break;
             
@@ -201,25 +241,17 @@
 - (void)excuteHttpRequest {
     //set default value
     self.requestId = 0;
-    if ([self.apiManager respondsToSelector:@selector(shouldCache)]) {
-        self.shouldCache = self.apiManager.shouldCache;
-    }
-    
     NSError *requestError;
     NSString *method = [self getRequestMethodString];
-    self.requestUrlString = self.apiManager.requestUrlString;
-    NSDictionary *parameters;
     //参数设置最终以dataSource为准
     if ([self.dataSource respondsToSelector:@selector(parametersForApi:)]) {
-        parameters = [self.dataSource parametersForApi:self];
-    } else {
-        parameters = self.apiManager.parameters;
+        self.parameters = [self.dataSource parametersForApi:self];
     }
     
     AFHTTPRequestSerializer *serializer = [AFHTTPRequestSerializer serializer];
     NSURLRequest *request = [serializer requestWithMethod:method
                                                 URLString:self.requestUrlString
-                                               parameters:parameters
+                                               parameters:self.parameters
                                                     error:&requestError];
     //生成请求数据出错，一般是参数错误，配置出错
     if (requestError) {
@@ -264,14 +296,17 @@
                                                   encoding:NSUTF8StringEncoding];
     
     @try {
-        NSDictionary *jsonDict = [NSJSONSerialization JSONObjectWithData:responseObject
-                                                                 options:NSJSONReadingAllowFragments
-                                                                   error:nil];
-        if (!jsonDict) {return [self callParseDataFailed];}
+        id result = responseObject;
+        if (self.isJsonData) {
+            result = [NSJSONSerialization JSONObjectWithData:responseObject
+                                                     options:NSJSONReadingAllowFragments
+                                                       error:nil];
+            if (!result) {return [self callParseDataFailed];}
+        }
 
         if ([self.apiManager respondsToSelector:@selector(parseData:)]) {
             dispatch_async(self.parseQueue, ^{
-                [self.apiManager parseData:jsonDict];
+                [self.apiManager parseData:result];
                 dispatch_async(dispatch_get_main_queue(), ^{
                     if (self.errorType == XBAPIManagerErrorTypeSuccess) {
                         [self callOnManagerCallApiSuccess];
@@ -280,6 +315,8 @@
                     }
                 });
             });
+        } else { //解析工作可能放在了其他地方
+            [self callOnManagerCallApiSuccess];
         }
         
         

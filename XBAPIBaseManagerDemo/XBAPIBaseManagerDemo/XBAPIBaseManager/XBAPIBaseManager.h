@@ -44,7 +44,7 @@ typedef NS_ENUM(NSUInteger, XBAPIManagerErrorType) {
 /** 调用接口需要发出的请求方式，常见的如：GET、POST */
 typedef NS_ENUM(NSUInteger, XBAPIRequestMethod) {
     /** GET请求 */
-    XBAPIRequestMethodGET,
+    XBAPIRequestMethodGET = 0,
     
     /** POST请求 */
     XBAPIRequestMethodPOST,
@@ -53,7 +53,7 @@ typedef NS_ENUM(NSUInteger, XBAPIRequestMethod) {
 /** 获取接口数据的方式，从网络了获取、从本地加载…… */
 typedef NS_ENUM(NSUInteger, XBAPIManagerLoadType) {
     /** 从网络获取 */
-    XBAPIManagerLoadTypeNetWork,
+    XBAPIManagerLoadTypeNetwork = 0,
     
     /** 从本地获取 */
     XBAPIManagerLoadTypeLocal,
@@ -105,15 +105,16 @@ typedef void (^XBAPIManagerCallBackBlock)(XBAPIBaseManager * _Nonnull apiManager
 #pragma mark - XBAPIManagerProtocol
 @protocol XBAPIManagerProtocol <NSObject>
 
-- (nonnull NSString *)requestUrlString;
+- (nonnull NSString *)urlPath; ///<URL的协议的path部分,see:http://wiki.jikexueyuan.com/project/python-crawler/grasp-webpages-url.html
 - (XBAPIRequestMethod)requestMethod;
 
 @optional
-- (nullable NSDictionary *)parameters; ///< 配置接口需要的参数
-- (BOOL)shouldCache; ///< 需要本地缓存数据吗？
+- (nonnull NSString *)urlProtocol; ///< URL的协议部分，默认是https
+- (nonnull NSString *)urlHostName; ///< URL的主机名部分
+- (nullable NSDictionary *)parameters; ///< 配置接口需要的参数，默认是没有参数nil
+- (BOOL)shouldCache; ///< 需要本地缓存数据吗，默认是NO
+- (BOOL)isResponseJsonData; ///< 接口返回的数据是json格式的数据吗，默认是YES
 - (void)parseData:(nonnull id)responseData; ///< 注意该方法本身处在子线程环境中:具体的解析工作要放在子类中进行，并且这个解析工作可以延后至onManagerCallApiSuccess里面进行
-
-
 @end
 
 
@@ -130,10 +131,11 @@ typedef void (^XBAPIManagerCallBackBlock)(XBAPIBaseManager * _Nonnull apiManager
 @property (nullable, nonatomic, strong) id contentData; ///< 解析后的数据，可以是nil，一般是子类自己添加新的属性
 
 //其他属性
-@property (nonnull ,nonatomic, readonly, copy) NSString *requestUrlString;
+@property (nonnull ,nonatomic, readonly, copy) NSString *requestUrlString; ///< 接口请求的url字符串
+
 @property (nonatomic, assign) NSTimeInterval timeout; ///< 每个接口可以单独设置超时时间
 
-//api method
+//MARK: - public api method
 
 - (nonnull instancetype)initWithDelegate:(nullable id<XBAPIManagerCallBackDelegate>)delegate;
 

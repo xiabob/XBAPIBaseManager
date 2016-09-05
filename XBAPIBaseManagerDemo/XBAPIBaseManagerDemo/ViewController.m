@@ -8,10 +8,12 @@
 
 #import "ViewController.h"
 #import "GetAppInfo.h"
+#import "GetAddressInfo.h"
 
 @interface ViewController ()<XBAPIManagerCallBackDelegate>
 
 @property (nonatomic, strong) GetAppInfo *api;
+@property (nonatomic, strong) GetAddressInfo *addressApi;
 
 @end
 
@@ -24,17 +26,22 @@
     self.api = [[GetAppInfo alloc] initWithDelegate:self];
     self.api.timeout = 6;
     [self.api loadData];
+
     
 //    self.api = [[GetAppInfo alloc] init];
 //    self.api.timeout = 6;
 //    [self.api loadDataWithType:XBAPIManagerLoadTypeLocal andCallBackBlock:^(XBAPIBaseManager * _Nonnull apiManager) {
 //        NSLog(@"CallBackBlock:%@", apiManager.rawResponseString);
 //    }];
+    
+    
+    self.addressApi = [[GetAddressInfo alloc] initWithDelegate:self];
+    self.addressApi.timeout = 4;
+    [self.addressApi loadData];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-    [self.api loadData];
 }
 
 - (void)dealloc {
@@ -44,15 +51,15 @@
 #pragma mark - XBAPIManagerCallBackDelegate
 
 - (void)onManagerCallApiSuccess:(XBAPIBaseManager *)manager {
-    NSLog(@"onManagerCallApiSuccess");
+    NSLog(@"%@ onManagerCallApiSuccess", manager);
 }
 
 - (void)onManagerCallApiFailed:(XBAPIBaseManager *)manager {
-    NSLog(@"onManagerCallApiFailed:%@", manager.errorMsg);
+    NSLog(@"%@ onManagerCallApiFailed:%@",manager ,manager.errorMsg);
 }
 
 - (void)onManagerCallCancled:(XBAPIBaseManager *)manager {
-    NSLog(@"onManagerCallCancled");
+    NSLog(@"%@ onManagerCallCancled", manager);
 }
 
 - (void)didReceiveMemoryWarning {

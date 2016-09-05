@@ -17,6 +17,7 @@
 		7428E4BE1D4F2DF0001A6BCF /* XBAPIBaseManagerDemoTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 7428E4BD1D4F2DF0001A6BCF /* XBAPIBaseManagerDemoTests.m */; };
 		7428E4C91D4F2DF0001A6BCF /* XBAPIBaseManagerDemoUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = 7428E4C81D4F2DF0001A6BCF /* XBAPIBaseManagerDemoUITests.m */; };
 		7428E4D91D4F2E4F001A6BCF /* XBAPIBaseManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 7428E4D81D4F2E4F001A6BCF /* XBAPIBaseManager.m */; };
+		74A1767E1D7D530E00DE0218 /* GetAddressInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 74A1767D1D7D530E00DE0218 /* GetAddressInfo.m */; };
 		CCD5A2F634AA63FEF55C6E39 /* libPods-XBAPIBaseManagerDemo.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A2979E01F17DB44059D933EE /* libPods-XBAPIBaseManagerDemo.a */; };
 /* End PBXBuildFile section */
 
@@ -60,6 +61,8 @@
 		7428E4CA1D4F2DF0001A6BCF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		7428E4D71D4F2E4F001A6BCF /* XBAPIBaseManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XBAPIBaseManager.h; sourceTree = "<group>"; };
 		7428E4D81D4F2E4F001A6BCF /* XBAPIBaseManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XBAPIBaseManager.m; sourceTree = "<group>"; };
+		74A1767C1D7D530E00DE0218 /* GetAddressInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GetAddressInfo.h; sourceTree = "<group>"; };
+		74A1767D1D7D530E00DE0218 /* GetAddressInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GetAddressInfo.m; sourceTree = "<group>"; };
 		A2979E01F17DB44059D933EE /* libPods-XBAPIBaseManagerDemo.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-XBAPIBaseManagerDemo.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -129,6 +132,8 @@
 				7428E4AA1D4F2DEF001A6BCF /* ViewController.m */,
 				741385841D51DADB00229EC2 /* GetAppInfo.h */,
 				741385851D51DADB00229EC2 /* GetAppInfo.m */,
+				74A1767C1D7D530E00DE0218 /* GetAddressInfo.h */,
+				74A1767D1D7D530E00DE0218 /* GetAddressInfo.m */,
 				7428E4AC1D4F2DEF001A6BCF /* Main.storyboard */,
 				7428E4AF1D4F2DEF001A6BCF /* Assets.xcassets */,
 				7428E4B11D4F2DEF001A6BCF /* LaunchScreen.storyboard */,
@@ -368,6 +373,7 @@
 				7428E4A81D4F2DEF001A6BCF /* AppDelegate.m in Sources */,
 				7428E4A51D4F2DEF001A6BCF /* main.m in Sources */,
 				7428E4D91D4F2E4F001A6BCF /* XBAPIBaseManager.m in Sources */,
+				74A1767E1D7D530E00DE0218 /* GetAddressInfo.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

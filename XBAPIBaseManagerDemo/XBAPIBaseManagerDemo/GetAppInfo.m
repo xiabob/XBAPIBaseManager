@@ -12,8 +12,12 @@
 
 //414478124 , https://itunes.apple.com/lookup?id=414478124
 
-- (NSString *)requestUrlString {
-    return @"https://itunes.apple.com/lookup";
+- (NSString *)urlHostName {
+    return @"itunes.apple.com";
+}
+
+- (NSString *)urlPath {
+    return @"lookup";
 }
 
 - (NSDictionary *)parameters {
